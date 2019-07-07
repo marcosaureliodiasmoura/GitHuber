@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
   View,
   Text,
@@ -13,6 +14,12 @@ import api from '../../services/api';
 import styles from './styles';
 
 class Welcome extends Component {
+  static propTypes = {
+    navigation: PropTypes.shape({
+      navigate: PropTypes.func,
+    }).isRequired,
+  };
+
   // 1. Armazena o texto do input (username) dentro do estado do component.
   state = {
     username: '',
@@ -57,7 +64,7 @@ class Welcome extends Component {
 
     return (
       <View style={styles.container}>
-        <StatusBar barStyle="light-content" />
+        <StatusBar barStyle="light-content" backgroundColor="#444A5A" />
         <Text style={styles.title}>Bem-vindo</Text>
         <Text style={styles.text}>Para continuar precisamos que você informe seu usuário</Text>
 

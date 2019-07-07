@@ -27,17 +27,20 @@ export default class Repositories extends Component {
   state = {
     data: [],
     loading: true,
+    refreshing: false, // anotação a informação de quando esta executando o refresh ou nao.
   };
 
-  async componentDidMount() {
-    const username = await AsyncStorage.getItem('@Githuber:username'); // Vou usar este username para buscar os repositorios da API.
-    //     // 1° Forma de fazer
-    //     // const response  = await api.get(`/users/${username}/repos`); // Busco todos os repositorios referente ao username que foi digitado.
-    //     // this.setState({ data: response.data});
-    //     // 2° Forma de fazer com desestruturação
-    const { data } = await api.get(`/users/${username}/repos`); // Busco todos os repositorios referente ao username que foi digitado.
-    this.setState({ data, loading: false });
+  componentDidMount() {
+    this.loadRepositories();
   }
+
+  loadRepositories = async () => {
+    this.setState({ refreshing: true }); // Essa função vai ser chamada toda vez que usuário arrastar para baixo, diferente do load
+    const username = await AsyncStorage.getItem('@Githuber:username'); // Vou usar este username para buscar os repositorios da API.
+
+    const { data } = await api.get(`/users/${username}/repos`); // Busco todos os repositorios referente ao username que foi digitado.
+    this.setState({ data, loading: false, refreshing: false });
+  };
 
   // Pra pegar o conteúdo de cada repositorio do Item de Flatlist e
   // Repassar para o componente RepositoryItem que ta esperando uma
@@ -48,13 +51,15 @@ export default class Repositories extends Component {
 
   // renderList = () => <Text>Lista</Text>;
   renderList = () => {
-    const { data } = this.state;
+    const { data, refreshing } = this.state;
 
     return (
       <FlatList
         data={data} // Qual o array onde está os meus dados? nosso data do state
         keyExtractor={item => String(item.id)}
         renderItem={this.renderListItem}
+        onRefresh={this.loadRepositories} // onRefresh faz com que apareça uma flecha no ato de carregar novos itens na tela ao arrastar a lista pra baixo.
+        refreshing={refreshing}
       />
     );
   };
@@ -78,3 +83,14 @@ export default class Repositories extends Component {
 // Quando o componentDidMount consumir as informações da api
 // ele irá me retornar as informações (data) e o loading como false.
 // No render, ele irá chamar a função renderList() que irá "desligar" o loading e mostrar a mensagem (lista)
+
+// Tudo que estiver aqui vou passar para a função loadRepositories
+// async componentDidMount() {
+//   const username = await AsyncStorage.getItem('@Githuber:username'); // Vou usar este username para buscar os repositorios da API.
+//   //     // 1° Forma de fazer
+//   //     // const response  = await api.get(`/users/${username}/repos`); // Busco todos os repositorios referente ao username que foi digitado.
+//   //     // this.setState({ data: response.data});
+//   //     // 2° Forma de fazer com desestruturação
+//   const { data } = await api.get(`/users/${username}/repos`); // Busco todos os repositorios referente ao username que foi digitado.
+//   this.setState({ data, loading: false });
+// }

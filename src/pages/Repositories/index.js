@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-  View, AsyncStorage, Text, ActivityIndicator,
+  View, AsyncStorage, ActivityIndicator, FlatList,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import api from '../../services/api';
 import styles from './styles';
 
 import Header from '../../components/Header';
+
+// Importamos o repository Item
+import RepositoryItem from './RepositoriesItem';
 
 // // Criamos em formato de função para pegarmos a tintColor para repassarmos pro nosso icone.
 const TabIcon = ({ tintColor }) => <Icon name="list-alt" size={20} color={tintColor} />;
@@ -36,13 +39,31 @@ export default class Repositories extends Component {
     this.setState({ data, loading: false });
   }
 
-  renderList = () => <Text>Lista</Text>;
+  // Pra pegar o conteúdo de cada repositorio do Item de Flatlist e
+  // Repassar para o componente RepositoryItem que ta esperando uma
+  // Propriedade repository, vou passar repository dentro e
+  // Pra pegar o item do Flatlist terei que passar uma desestruturação do
+  // Objeto que eu recebo e então passar o item.
+  renderListItem = ({ item }) => <RepositoryItem repository={item} />;
+
+  // renderList = () => <Text>Lista</Text>;
+  renderList = () => {
+    const { data } = this.state;
+
+    return (
+      <FlatList
+        data={data} // Qual o array onde está os meus dados? nosso data do state
+        keyExtractor={item => String(item.id)}
+        renderItem={this.renderListItem}
+      />
+    );
+  };
 
   render() {
     const { loading } = this.state;
 
     return (
-      <View>
+      <View style={styles.container}>
         <Header title="Repositorios" />
         {loading ? <ActivityIndicator style={styles.loading} /> : this.renderList()}
         {/* {this.state.data.map(repo => (

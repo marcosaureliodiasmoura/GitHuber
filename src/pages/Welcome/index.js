@@ -51,7 +51,7 @@ class Welcome extends Component {
       await this.checkUserExists(username);
       await this.saveUser(username); // Salva o usuário no storage da aplicação
       // console.tron.log(this.props.navigation);
-      navigation.navigate('Repositories'); // utilizo o navigate passando o nome da prox tela.
+      navigation.navigate('UserRoute'); // utilizo o navigate passando o nome da prox tela.
     } catch (err) {
       this.setState({ loading: false, error: true });
       console.tron.log('Usuário Inexistente');
